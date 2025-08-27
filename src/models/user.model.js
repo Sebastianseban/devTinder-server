@@ -39,13 +39,16 @@ const userSchema = new mongoose.Schema(
         message: "{VALUE} is not a valid gender type",
       },
     },
+    refreshToken: {
+      type: String,
+    },
     skills: {
       type: [String],
       validate: {
         validator: function (skills) {
-          return skills.length > 0 && skills.length <= 10;
+          return !skills || skills.length <= 10;
         },
-        message: "User must have at least 1 skill and no more than 10 skills",
+        message: "User can have up to 10 skills",
       },
     },
   },
@@ -69,7 +72,7 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
-        _id: this._id,
+      _id: this._id,
       emailId: this.emailId,
       firstName: this.firstName,
     },
@@ -83,7 +86,7 @@ userSchema.methods.generateAccessToken = function () {
 userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
-       _id: this._id,
+      _id: this._id,
     },
     process.env.REFRESH_TOKEN_SECRET,
     {
