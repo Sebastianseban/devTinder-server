@@ -39,6 +39,37 @@ const userSchema = new mongoose.Schema(
         message: "{VALUE} is not a valid gender type",
       },
     },
+    age: {
+      type: Number,
+      min: 18,
+    },
+    photoUrl: {
+      type: String,
+    },
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
+    membershipType: {
+      type: String,
+      enum: {
+        values: ["basic", "premium", "gold", "platinum"],
+        message: "{VALUE} is not a valid membership type",
+      },
+      default: "basic",
+    },
+    bio: {
+      type: String,
+      default: "This is a default about of the user!",
+      maxLength: [500, "About section cannot exceed 500 characters"],
+      trim: true,
+    },
+    experienceLevel: {
+      type: String,
+      enum: ["student", "junior", "mid", "senior", "lead", "freelancer"],
+      default: "student",
+    },
+
     refreshToken: {
       type: String,
     },
