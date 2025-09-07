@@ -204,7 +204,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 export const getCurrentUser = asyncHandler(async (req,res) => {
-  const userId = req.user?.id;
+  const userId = req.user?._id;
 
   if (!userId) {
     throw new ApiError(401, "Unauthorized access");
