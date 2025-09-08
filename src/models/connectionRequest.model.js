@@ -1,5 +1,4 @@
-const { default: mongoose } = require("mongoose");
-
+import mongoose from "mongoose";
 
 const connectionRequestSchema = new mongoose.Schema(
   {
@@ -41,5 +40,7 @@ connectionRequestSchema.pre("save", function (next) {
   next();
 });
 
-
-export const ConnectionRequest = mongoose.model("ConnectionRequest",connectionRequestSchema)
+export const ConnectionRequest = mongoose.model(
+  "ConnectionRequest",
+  connectionRequestSchema
+);

@@ -8,10 +8,12 @@ app.use(express.json({limit: "16kb" }))
 app.use(cookieParser())
 
 import authRouter from "./routes/auth.routes.js"
+import  connectionRequestRouter from "./routes/connectionRequest.routes.js"
 
 
 
 app.use("/api/v1/auth",authRouter)
+app.use("/api/v1/connections",connectionRequestRouter)
 
 
 
