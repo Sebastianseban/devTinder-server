@@ -16,6 +16,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 30,
+      match: /^[a-zA-Z0-9._]+$/,
+    },
     emailId: {
       type: String,
       required: [true, "Email is required"],
@@ -33,6 +43,8 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minLength: [8, "Password must be at least 8 characters"],
     },
+    location: { type: String, trim: true, maxlength: 100 },
+    headline: { type: String, trim: true, maxlength: 100 },
     gender: {
       type: String,
       enum: {
@@ -69,6 +81,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["student", "junior", "mid", "senior", "lead", "freelancer"],
       default: "student",
+    },
+    socialLinks: {
+      github: String,
+      linkedin: String,
+      portfolio: String,
+      twitter: String,
     },
 
     refreshToken: {

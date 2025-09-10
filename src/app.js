@@ -15,7 +15,7 @@ import  connectionRequestRouter from "./routes/connectionRequest.routes.js"
 app.use("/api/v1/auth",authRouter)
 app.use("/api/v1/connections",connectionRequestRouter)
 
-
+    
 
 
 app.use(notFound)
