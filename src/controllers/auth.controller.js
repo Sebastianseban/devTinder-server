@@ -29,27 +29,69 @@ export const generateAccessAndRefreshToken = async (userId) => {
 };
 
 export const registerUser = asyncHandler(async (req, res) => {
-  const { firstName, lastName, emailId, password } = req.body;
+  const { firstName, lastName, emailId, username, password, confirmPassword } =
+    req.body;
 
-  if (!firstName || !emailId || !password) {
-    throw new ApiError(400, "Required fields are missing", [
-      { field: "firstName", message: "First name is required" },
-      { field: "emailId", message: "Email is required" },
-      { field: "password", message: "Password is required" },
+  const errors = [];
+  if (!firstName)
+    errors.push({ field: "firstName", message: "First name is required" });
+  if (!lastName)
+    errors.push({ field: "lastName", message: "Last name is required" });
+  if (!username)
+    errors.push({ field: "username", message: "Username is required" });
+  if (!emailId) errors.push({ field: "emailId", message: "Email is required" });
+  if (!password)
+    errors.push({ field: "password", message: "Password is required" });
+  if (!confirmPassword)
+    errors.push({
+      field: "confirmPassword",
+      message: "Confirm password is required",
+    });
+
+  if (errors.length > 0) {
+    throw new ApiError(400, "Required fields are missing", errors);
+  }
+
+  if (password !== confirmPassword) {
+    throw new ApiError(400, "Passwords do not match", [
+      { field: "confirmPassword", message: "Passwords do not match" },
     ]);
   }
 
-  const existingUser = await User.findOne({ emailId });
-
-  if (existingUser) {
-    throw new ApiError(409, "User already exists");
+  if (!/^[a-zA-Z0-9._]+$/.test(username)) {
+    throw new ApiError(400, "Invalid username format", [
+      {
+        field: "username",
+        message:
+          "Username can only contain letters, numbers, dots, and underscores",
+      },
+    ]);
   }
 
-  const user = await User.create({
-    firstName,
-    lastName,
-    emailId,
+  const existingUser = await User.findOne({
+    $or: [{ emailId }, { username }],
+  });
+
+  if (existingUser) {
+    if (existingUser.emailId === emailId) {
+      throw new ApiError(409, "User with this email already exists", [
+        { field: "emailId", message: "Email already registered" }
+      ]);
+    }
+    if (existingUser.username === username) {
+      throw new ApiError(409, "Username already taken", [
+        { field: "username", message: "Username already taken" }
+      ]);
+    }
+  }
+
+   const user = await User.create({
+    firstName: firstName.trim(),
+    lastName: lastName.trim(),
+    username: username.toLowerCase().trim(),
+    emailId: emailId.toLowerCase().trim(),
     password,
+    isProfileComplete: false, 
   });
 
   if (!user) {
@@ -84,8 +126,9 @@ export const registerUser = asyncHandler(async (req, res) => {
         {
           user: createdUser,
           accessToken,
+          isProfileComplete: false,
         },
-        "User registered and logged in successfully"
+       "Account created successfully! Please complete your profile."
       )
     );
 });
@@ -203,20 +246,20 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export const getCurrentUser = asyncHandler(async (req,res) => {
+export const getCurrentUser = asyncHandler(async (req, res) => {
   const userId = req.user?._id;
 
   if (!userId) {
     throw new ApiError(401, "Unauthorized access");
   }
 
-  const user = await User.findById(userId).select("-password -refreshToken" )
+  const user = await User.findById(userId).select("-password -refreshToken");
 
   if (!user) {
     throw new ApiError(404, "User not found");
   }
 
   return res
-  .status(200)
-  .json(new ApiResponse(200, user, "User fetched successfully"));
-})
+    .status(200)
+    .json(new ApiResponse(200, user, "User fetched successfully"));
+});
