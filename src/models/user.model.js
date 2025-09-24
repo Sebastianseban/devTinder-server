@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import validator from "validator";
+import validator, { trim } from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -14,6 +14,9 @@ const userSchema = new mongoose.Schema(
     },
     lastName: {
       type: String,
+      required: [true, "Last name is required"], 
+      minLength: [2, "Last name must be at least 2 characters"],
+      maxLength: [50, "Last name cannot exceed 50 characters"],
       trim: true,
     },
     username: {
@@ -52,12 +55,23 @@ const userSchema = new mongoose.Schema(
         message: "{VALUE} is not a valid gender type",
       },
     },
+    phoneNumber: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: function(v) {
+          return !v || /^\+?[\d\s\-\(\)]+$/.test(v);
+        },
+        message: 'Please enter a valid phone number'
+      }
+    },
     age: {
       type: Number,
       min: 18,
     },
     photoUrl: {
       type: String,
+      default: null,
     },
     isPremium: {
       type: Boolean,
@@ -83,14 +97,30 @@ const userSchema = new mongoose.Schema(
       default: "student",
     },
     socialLinks: {
-      github: String,
-      linkedin: String,
-      portfolio: String,
-      twitter: String,
+      github: {
+       type: String,
+       trim:true
+      },
+      linkedin: {
+       type: String,
+       trim:true
+      },
+      portfolio: {
+       type: String,
+       trim:true
+      },
+      twitter:{
+       type: String,
+       trim:true
+      },
     },
 
     refreshToken: {
       type: String,
+    },
+     isProfileComplete: {
+      type: Boolean,
+      default: false,
     },
     skills: {
       type: [String],
