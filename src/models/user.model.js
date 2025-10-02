@@ -70,6 +70,7 @@ const userSchema = new mongoose.Schema(
       min: 18,
     },
     photoUrl: {
+    
       type: String,
       default: null,
     },

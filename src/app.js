@@ -1,6 +1,8 @@
 import cookieParser from "cookie-parser"
 import express from "express"
 import { errorHandler, notFound } from "./middleware/errorHandler.middleware.js"
+import cors from "cors";
+import compression from "compression"
 
 const app = express()
 
@@ -9,18 +11,24 @@ app.use(cookieParser())
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(compression());
 
+app.use(cors({
+  origin: "http://localhost:5173", // your frontend URL
+  credentials: true, // allow cookies
+}));
+
 
 import authRouter from "./routes/auth.routes.js"
 import  connectionRequestRouter from "./routes/connectionRequest.routes.js"
 import profileRouter from "./routes/profile.routes.js"
-import compression from "compression"
+import userRouter from "./routes/user.routes.js"
+
 
 
 
 app.use("/api/v1/auth",authRouter)
 app.use("/api/v1/connections",connectionRequestRouter)
 app.use("/api/v1/profile",profileRouter)
-
+app.use("/api/v1/users", userRouter);
     
 
 
