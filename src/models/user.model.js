@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
     },
     lastName: {
       type: String,
-      required: [true, "Last name is required"], 
+      required: [true, "Last name is required"],
       minLength: [2, "Last name must be at least 2 characters"],
       maxLength: [50, "Last name cannot exceed 50 characters"],
       trim: true,
@@ -41,11 +41,12 @@ const userSchema = new mongoose.Schema(
         message: (props) => `Invalid email address: ${props.value}`,
       },
     },
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-      minLength: [8, "Password must be at least 8 characters"],
-    },
+  password: {
+     type: String,
+     required: function() {
+       return this.provider !== 'google';
+     },
+   },
     location: { type: String, trim: true, maxlength: 100 },
     headline: { type: String, trim: true, maxlength: 100 },
     gender: {
@@ -59,18 +60,17 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       validate: {
-        validator: function(v) {
+        validator: function (v) {
           return !v || /^\+?[\d\s\-\(\)]+$/.test(v);
         },
-        message: 'Please enter a valid phone number'
-      }
+        message: "Please enter a valid phone number",
+      },
     },
     age: {
       type: Number,
       min: 18,
     },
     photoUrl: {
-    
       type: String,
       default: null,
     },
@@ -99,27 +99,39 @@ const userSchema = new mongoose.Schema(
     },
     socialLinks: {
       github: {
-       type: String,
-       trim:true
+        type: String,
+        trim: true,
       },
       linkedin: {
-       type: String,
-       trim:true
+        type: String,
+        trim: true,
       },
       portfolio: {
-       type: String,
-       trim:true
+        type: String,
+        trim: true,
       },
-      twitter:{
-       type: String,
-       trim:true
+    
+      twitter: {
+        type: String,
+        trim: true,
       },
     },
 
     refreshToken: {
       type: String,
     },
-     isProfileComplete: {
+      googleId: {
+        type: String,
+        unique: true,
+        sparse: true, // allows null for local users
+      },
+
+      provider: {
+        type: String,
+        enum: ["local", "google"],
+        default: "local",
+      },
+    isProfileComplete: {
       type: Boolean,
       default: false,
     },
