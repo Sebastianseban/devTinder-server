@@ -9,6 +9,7 @@ import {
 import { loginRateLimiter } from "../middleware/rateLimiter.middleware.js";
 import { verifyJWT } from "../middleware/auth.Middleware.js";
 import { googleAuthHandler } from "../controllers/google.controller.js";
+import { githubAuthHandler } from "../controllers/github.controller.js";
 
 
 const router = Router();
@@ -20,5 +21,6 @@ router.route("/refresh-token").get(refreshAccessToken);
 router.route("/me").get(verifyJWT, getCurrentUser);
 
 router.route("/google-auth").post(googleAuthHandler);
+router.post("/github", githubAuthHandler);
 
 export default router;
